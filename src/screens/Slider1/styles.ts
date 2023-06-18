@@ -16,5 +16,8 @@ export const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: 'space-around',
         marginBottom: 20
+    },
+    image: {
+        
     }
 });
