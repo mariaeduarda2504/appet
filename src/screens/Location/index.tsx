@@ -1,16 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import {API_GOOGLE} from '@env';
 import { Text, View } from 'react-native';
 import * as Location from 'expo-location';
-import MapView, {Region, Marker} from 'react-native-maps';
+import MapView, {Region, Marker, Polyline} from 'react-native-maps';
 import { styles } from "./styles"
+import { colors } from '../../styles/colors';
+import {GooglePlacesAutocomplete, GooglePlaceData, GooglePlaceDetail} from 'react-native-google-places-autocomplete';
+import MapViewDirections from 'react-native-maps-directions'
 
 export function LocationScreen() {
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [region, setRegion] = useState<Region>()
   const [marker, setMarker] = useState<Region[]>()
+  const [coords, setCoords] = useState<ICoords []>([])
+  const [destination, setDestination] = useState<Region | null>(null)
+  const mapRef = useRef<MapView>(null)
+
+  type ICoords = {
+    latitude: number
+    longitude: number
+  }
 
   useEffect(() => {
+    let subscription: Location.LocationSubscription
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -32,6 +45,13 @@ export function LocationScreen() {
         latitudeDelta: 0.006,
         longitudeDelta: 0.006
     }])
+    subscription = await Location.watchPositionAsync({
+      accuracy: Location.LocationAccuracy.High,
+      timeInterval: 1000,
+      distanceInterval: 1
+    }, (location) => {
+      setCoords((prevState)=> [...prevState, location.coords])
+    });
     })();
   }, []);
 
@@ -49,6 +69,11 @@ export function LocationScreen() {
             {marker && marker.map((i)=>(
                 <Marker key={i.latitude} coordinate={i}/>
             ))}
+            {coords && <Polyline
+              coordinates={coords}
+              strokeColor={colors.black}
+              strokeWidth={7}
+            />}
             </MapView>
         ):(
             <Text style={styles.paragraph}>{text}</Text>
