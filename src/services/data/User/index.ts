@@ -4,7 +4,7 @@ export interface IRegister {
     email?:string
     password?: string
 }
-export interface IAutheticate {
+export interface IAuthenticate {
     email?: string
     password?: string
 }
@@ -24,7 +24,7 @@ class UserData {
     register(data: IRegister) {
         return api.post('/register', data)
     }
-    login(data: IAutheticate){
+    login(data: IAuthenticate){
         return api.post<IUserLogin>('/login', data)
     }
 }

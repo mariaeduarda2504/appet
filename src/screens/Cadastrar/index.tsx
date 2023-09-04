@@ -49,7 +49,7 @@ export function Cadastrar({navigation}:LoginTypes) {
     useEffect(()=>{
         setTimeout(()=>{
             setIsLoading(false)
-        },500)
+        },750)
     },[])
     return (
         <>
